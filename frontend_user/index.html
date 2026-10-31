@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Tư Vấn Tuyển Sinh Cao Thắng</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="css/chat.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body>
+
+    <!-- CONSULTATION REGISTRATION MODAL -->
+    <div id="consultModal" class="consult-modal-backdrop hidden">
+        <div class="consult-box">
+            <div id="consultFormContent">
+                <div class="consult-header">
+                    <span class="consult-header-icon">📋</span>
+                    <h2>Đăng ký tư vấn tuyển sinh</h2>
+                    <p>Điền thông tin bên dưới, bộ phận tuyển sinh sẽ liên hệ bạn trong thời gian sớm nhất.</p>
+                </div>
+                <div class="consult-form-row">
+                    <div class="consult-form-group">
+                        <label>Họ và tên <span class="required">*</span></label>
+                        <input type="text" id="consultName" placeholder="Nguyễn Văn A">
+                    </div>
+                    <div class="consult-form-group">
+                        <label>Số điện thoại</label>
+                        <input type="tel" id="consultPhone" placeholder="0901 234 567">
+                    </div>
+                </div>
+                <div class="consult-form-group">
+                    <label>Email <span class="required">*</span></label>
+                    <input type="email" id="consultEmail" placeholder="email@example.com">
+                </div>
+                <div class="consult-form-group">
+                    <label>Ngành quan tâm</label>
+                    <select id="consultMajor">
+                        <option value="">-- Chọn ngành --</option>
+                        <optgroup label="⚡ Nhóm ngành Điện - Điện tử">
+                            <option value="Công nghệ Kỹ thuật Điện, Điện tử">Công nghệ KT Điện, Điện tử (ABET)</option>
+                            <option value="Công nghệ Kỹ thuật Điện và Năng lượng tái tạo">Công nghệ KT Điện và Năng
+                                lượng tái tạo</option>
+                            <option value="Công nghệ Kỹ thuật Điện tử - Viễn thông">Công nghệ KT Điện tử - Viễn thông
+                            </option>
+                            <option value="Công nghệ Kỹ thuật Bán dẫn và Vi mạch">Công nghệ KT Bán dẫn và Vi mạch
+                            </option>
+                            <option value="Điện công nghiệp">Điện công nghiệp</option>
+                            <option value="Điện tử công nghiệp">Điện tử công nghiệp</option>
+                        </optgroup>
+                        <optgroup label="🔧 Nhóm ngành Cơ khí - Ô tô">
+                            <option value="Công nghệ Kỹ thuật Cơ khí">Công nghệ KT Cơ khí (ABET)</option>
+                            <option value="Công nghệ Kỹ thuật Bảo trì thiết bị công nghiệp">Công nghệ KT Bảo trì thiết
+                                bị công nghiệp</option>
+                            <option value="Công nghệ Kỹ thuật Ô tô">Công nghệ KT Ô tô (ABET)</option>
+                            <option value="Công nghệ Kỹ thuật Nhiệt (Cơ điện lạnh)">Công nghệ KT Nhiệt - Cơ điện lạnh
+                                (ABET)</option>
+                            <option value="Bảo trì, sửa chữa Ô tô">Bảo trì, sửa chữa Ô tô (Công nghệ Ô tô)</option>
+                            <option value="Cơ khí chế tạo (Cắt gọt kim loại)">Cơ khí chế tạo (Cắt gọt kim loại)</option>
+                            <option value="Sửa chữa cơ khí (Nguội sửa chữa máy công cụ)">Sửa chữa cơ khí (Nguội sửa chữa
+                                máy công cụ)</option>
+                            <option value="Hàn (Công nghệ cao)">Hàn (Công nghệ cao)</option>
+                            <option value="Kỹ thuật máy lạnh và điều hòa không khí">KT máy lạnh và điều hòa không khí
+                            </option>
+                        </optgroup>
+                        <optgroup label="💻 Nhóm ngành Công nghệ thông tin">
+                            <option value="Công nghệ Thông tin">Công nghệ Thông tin</option>
+                            <option value="Quản trị mạng máy tính">Quản trị mạng máy tính</option>
+                            <option value="Kỹ thuật sửa chữa, lắp ráp máy tính">KT sửa chữa, lắp ráp máy tính</option>
+                        </optgroup>
+                        <optgroup label="🤖 Nhóm ngành Tự động hóa - Cơ điện tử">
+                            <option value="Công nghệ Kỹ thuật Điều khiển và Tự động hóa">Công nghệ KT Điều khiển và Tự
+                                động hóa</option>
+                            <option value="Công nghệ Kỹ thuật Tự động hóa trong nông nghiệp">Công nghệ KT Tự động hóa
+                                trong nông nghiệp</option>
+                            <option value="Công nghệ Kỹ thuật Cơ điện tử">Công nghệ KT Cơ điện tử (KOSEN-Nhật Bản)
+                            </option>
+                        </optgroup>
+                        <optgroup label="📊 Nhóm ngành Kinh tế - Tài chính">
+                            <option value="Kế toán tin học (Kế toán doanh nghiệp)">Kế toán tin học (Kế toán doanh
+                                nghiệp)</option>
+                            <option value="Công nghệ Tài chính và Kinh doanh số">Công nghệ Tài chính và Kinh doanh số
+                            </option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="consult-form-group">
+                    <label>Nội dung cần tư vấn</label>
+                    <textarea id="consultMessage" placeholder="Nhập nội dung bạn muốn được tư vấn..."></textarea>
+                </div>
+                <button class="consult-submit-btn" id="consultSubmitBtn">📨 Gửi đăng ký tư vấn</button>
+                <button class="consult-close-btn" id="consultCloseBtn">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTH MODAL (hidden by default) -->
+    <div id="loginModal" class="login-modal-backdrop hidden">
+        <div class="login-box" style="position: relative;">
+            <button class="login-close-btn" id="loginCloseBtn" style="position: absolute; top: 10px; right: 10px; margin: 0; padding: 5px; width: 30px; height: 30px; border-radius: 50%; background: var(--bg-surface); color: var(--text-primary); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px;">✕</button>
+            <h2 id="authModalTitle" style="margin-top: 5px;">🎓 Cổng Tư Vấn AI</h2>
+            <p id="authModalDesc">Đăng nhập để lưu và xem lại lịch sử trò chuyện</p>
+            
+            <!-- ALERT MESSAGES -->
+            <div id="authAlert" style="display:none; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 13px; text-align: center;"></div>
+
+            <!-- GOOGLE LOGIN PANEL -->
+            <div id="panelLogin" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 150px;">
+                <div id="googleBtnContainer"></div>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 20px; text-align: center;">
+                    Bằng cách đăng nhập, bạn đồng ý với các điều khoản dịch vụ của chúng tôi.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="main-wrapper" id="mainWrapper">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <!-- Logged-in sidebar content -->
+            <div id="sidebarLoggedIn" style="display:none; flex-direction:column; height:100%;">
+                <div class="sidebar-header">
+                    <div class="user-info" id="userInfoDisplay">Chào bạn: ...</div>
+                    <button class="new-chat-btn" id="newChatBtn">➕ Cuộc trò chuyện mới</button>
+                </div>
+                <div class="history-list" id="historyList">
+                    <!-- History injected via JS -->
+                </div>
+                <div class="sidebar-footer">
+                    <button class="logout-btn" id="logoutBtn">Đăng xuất</button>
+                </div>
+            </div>
+            <!-- Guest sidebar content -->
+            <div id="sidebarGuest" style="display:flex; flex-direction:column; height:100%;">
+                <div class="sidebar-header">
+                    <div class="user-info" style="color: var(--text-secondary);">👋 Chế độ khách</div>
+                </div>
+                <div class="sidebar-guest-prompt">
+                    <div class="guest-icon">🔐</div>
+                    <p>Đăng nhập để lưu lịch sử trò chuyện và xem lại các cuộc hội thoại trước.</p>
+                    <button class="sidebar-login-btn" id="sidebarLoginBtn">🔑 Đăng nhập ngay</button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Loading overlay -->
+        <div class="loading-overlay" id="loading-overlay">
+            <div style="text-align:center">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Đang kết nối...</div>
+            </div>
+        </div>
+
+        <div class="app-container">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-left">
+                    <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Đóng/Mở thanh bên">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                    <img src="assets/LogoTrường.png" alt="Logo" class="header-logo">
+                    <h1>Chatbot Tư Vấn Tuyển Sinh Cao Thắng</h1>
+                </div>
+                <div class="header-right">
+                    <!-- Auth dropdown area -->
+                    <div class="auth-dropdown-wrap" id="headerAuthArea">
+                        <button class="header-login-btn" id="headerLoginBtn" title="Đăng nhập">
+                            🔑 Đăng nhập
+                        </button>
+                        <div class="auth-dropdown" id="authDropdown">
+                            <button class="auth-dropdown-item" id="ddLoginUser">
+                                <span class="item-icon">👤</span>
+                                <span class="item-label">Đăng nhập Người dùng</span>
+                            </button>
+                            <div class="auth-dropdown-divider"></div>
+                            <a href="/?page=admin" target="_blank" class="auth-dropdown-item" id="ddLoginAdmin">
+                                <span class="item-icon">⚙️</span>
+                                <span class="item-label">Đăng nhập Admin</span>
+                            </a>
+                        </div>
+                    </div>
+                    <button class="theme-btn" id="theme-toggle" title="Chuyển đổi giao diện">
+                        <span id="theme-icon">🌙</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Info Banner -->
+            <div class="info-banner">
+                <span class="info-icon">ℹ️</span>
+                <span>Hệ thống RAG đã được nâng cấp lên Hybrid Search: Khắc phục lỗi bỏ sót từ khóa.</span>
+            </div>
+
+            <!-- Chat Container -->
+            <div class="chat-container" id="chat-container">
+                <div id="messages-area"></div>
+
+                <!-- Typing Indicator -->
+                <div class="typing-indicator" id="typing-indicator">
+                    <div class="typing-avatar">🤖</div>
+                    <div class="typing-dots">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <textarea id="user-input" placeholder="Bạn muốn hỏi gì về kỳ tuyển sinh năm nay?"
+                        rows="1"></textarea>
+                    <button class="mic-btn" id="mic-btn" title="Nhấn để nói">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                            <line x1="12" y1="19" x2="12" y2="23"></line>
+                            <line x1="8" y1="23" x2="16" y2="23"></line>
+                        </svg>
+                    </button>
+                    <button class="send-btn" id="send-btn" title="Gửi tin nhắn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
+                <button class="consult-register-btn" id="consultRegisterBtn">
+                    <span class="consult-icon">📝</span>
+                    <span>Đăng ký tư vấn tuyển sinh</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Markdown library -->
+        <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+
+        <script src="js/streamlit_api.js"></script>
+        <script src="js/state.js"></script>
+        <script src="js/auth.js"></script>
+        <script src="js/chat_ui.js"></script>
+        <script src="js/main.js"></script>
+
+    </div>
+</body>
+
+</html>

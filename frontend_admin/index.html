@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Tuyển Sinh AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/pages.css">
+</head>
+
+<body>
+    <!-- Loading -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div style="text-align:center">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Đang tải dữ liệu...</div>
+        </div>
+    </div>
+
+    <!-- Chat Detail Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Chi tiết phiên chat</h3>
+                <button class="modal-close" id="modalClose">✕</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <div class="admin-layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <h2>
+                    <img src="assets/LogoTrường.png" alt="Logo" class="brand-logo" style="width: 40px; height: 40px; object-fit: contain;">
+                    <span>Tuyển Sinh<br>Admin</span>
+                </h2>
+                <p>Hệ thống quản trị</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-label">Menu chính</div>
+                <button class="nav-item active" data-page="overview">
+                    <span class="nav-icon">🏠</span> Tổng quan
+                </button>
+                <button class="nav-item" data-page="history">
+                    <span class="nav-icon">💬</span> Lịch sử Chat
+                </button>
+                <button class="nav-item" data-page="ratings">
+                    <span class="nav-icon">⭐</span> Đánh giá
+                </button>
+                <button class="nav-item" data-page="knowledge">
+                    <span class="nav-icon">📚</span> Dữ liệu Tuyển sinh
+                </button>
+                <button class="nav-item" data-page="consult">
+                    <span class="nav-icon">📋</span> Yêu cầu tư vấn
+                    <span class="nav-badge" id="consultNavBadge" style="display:none">0</span>
+                </button>
+                <button class="nav-item" data-page="prompt">
+                    <span class="nav-icon">🤖</span> Quản lý Prompt
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="nav-item"
+                    onclick="StreamlitApi.setComponentValue({ action: 'admin_logout', timestamp: Date.now() })">
+                    <span class="nav-icon">🚪</span> Đăng xuất
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="main-content">
+            <!-- TOP HEADER -->
+            <header class="top-header">
+                <div class="header-left">
+                    <span class="header-title" id="headerTitle">Tổng quan hệ thống</span>
+                    <span class="status-badge">Trực tuyến</span>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <span>🔍</span>
+                        <input type="text" placeholder="Tìm kiếm dữ liệu..." id="globalSearch">
+                    </div>
+                    <div class="header-avatar">AD</div>
+                </div>
+            </header>
+
+            <!-- PAGE CONTENT -->
+            <div class="page-content">
+
+                <!-- ========== OVERVIEW ========== -->
+                <div class="page-section active" id="page-overview">
+                    <div class="greeting">
+                        <h1 id="greetingText">Chào buổi sáng, Admin!</h1>
+                        <p>Đây là báo cáo hiệu suất chatbot tuyển sinh hôm nay.</p>
+                    </div>
+
+                    <!-- Stat Cards -->
+                    <div class="stats-grid" id="statsGrid">
+                        <!-- Injected by JS -->
+                    </div>
+
+                    <!-- Chart + Recent Chats -->
+                    <div class="dashboard-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>📊 Phân bố đánh giá</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="ratingChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>💬 Phiên chat gần đây</h3>
+                            </div>
+                            <div class="recent-chat-list" id="recentChats">
+                                <!-- Injected by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Users -->
+                    <div class="dashboard-grid">
+                        <div class="card users-card">
+                            <div class="card-header">
+                                <h3>👥 Danh sách người dùng</h3>
+                            </div>
+                            <div class="card-body" style="padding:0">
+                                <table class="data-table" id="usersTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Người dùng</th>
+                                            <th>Số phiên chat</th>
+                                            <th>Số câu hỏi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="usersTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== HISTORY ========== -->
+                <div class="page-section" id="page-history">
+                    <div class="greeting">
+                        <h1>💬 Lịch sử Chat</h1>
+                        <p>Tất cả phiên trò chuyện của người dùng với chatbot.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-body" style="padding:0">
+                            <table class="data-table" id="historyTable">
+                                <thead>
+                                    <tr>
+                                        <th>Người dùng</th>
+                                        <th>Tiêu đề</th>
+                                        <th>Số tin nhắn</th>
+                                        <th>👍</th>
+                                        <th>👎</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== RATINGS ========== -->
+                <div class="page-section" id="page-ratings">
+                    <div class="greeting">
+                        <h1>⭐ Đánh giá câu trả lời</h1>
+                        <p>Danh sách các câu trả lời đã được người dùng đánh giá.</p>
+                    </div>
+
+                    <div class="filter-tabs" id="ratingFilter">
+                        <button class="filter-tab active" data-filter="all">Tất cả</button>
+                        <button class="filter-tab" data-filter="up">👍 Tốt</button>
+                        <button class="filter-tab" data-filter="down">👎 Chưa tốt</button>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body" style="padding:0">
+                            <table class="data-table" id="ratingsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Người dùng</th>
+                                        <th>Câu hỏi</th>
+                                        <th>Câu trả lời (tóm tắt)</th>
+                                        <th>Đánh giá</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ratingsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== KNOWLEDGE ========== -->
+                <div class="page-section" id="page-knowledge">
+                    <div class="greeting">
+                        <h1>📚 Dữ liệu Tuyển sinh</h1>
+                        <p>Quản lý các tệp dữ liệu được sử dụng bởi hệ thống RAG chatbot.</p>
+                    </div>
+
+                    <!-- Layout top: Upload & Info cards -->
+                    <div class="dashboard-grid" style="grid-template-columns: 2fr 1fr; margin-bottom: 20px;">
+                        <!-- Upload Card -->
+                        <div class="card"
+                            style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; border: 2px dashed var(--border); background: transparent; text-align: center;">
+                            <div
+                                style="width: 50px; height: 50px; background: #e0e7ff; color: var(--accent); border-radius: 12px; display: grid; place-items: center; font-size: 1.5rem; margin-bottom: 16px;">
+                                📄</div>
+                            <h3 style="margin-bottom: 8px;">Tải lên dữ liệu mới</h3>
+                            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Kéo và thả các
+                                tệp dữ liệu vào đây. Hỗ trợ định dạng .TXT và .JSON để huấn luyện chatbot.</p>
+
+                            <div style="display: flex; gap: 10px;">
+                                <label for="fileUploadInput" class="action-btn"
+                                    style="background: #000080; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 8px; font-weight: 600;">+
+                                    Chọn tệp</label>
+                                <input type="file" id="fileUploadInput" accept=".txt,.json" style="display: none;"
+                                    onchange="handleFileUpload(event)">
+                            </div>
+                        </div>
+
+                        <!-- Info Cards -->
+                        <div style="display: flex; flex-direction: column; gap: 20px;">
+                            <div class="card"
+                                style="background: #000080; color: white; padding: 20px; flex: 1; border-radius: 12px; position: relative; overflow: hidden;">
+                                <div
+                                    style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-bottom: 10px; color: rgba(255,255,255,0.8);">
+                                    TỔNG DUNG LƯỢNG</div>
+                                <div style="font-size: 2.2rem; font-weight: 800; margin-bottom: 20px;"
+                                    id="totalStorageDisplay">0 MB</div>
+                                <div
+                                    style="height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; width: 100%; margin-bottom: 10px;">
+                                    <div style="height: 100%; background: white; border-radius: 2px; width: 71%;"></div>
+                                </div>
+                                <div style="font-size: 0.75rem; color: rgba(255,255,255,0.8);">Đã sử dụng 71% tài nguyên
+                                    Vector DB</div>
+                            </div>
+
+                            <div class="card"
+                                style="padding: 20px; display: flex; align-items: center; gap: 16px; border-radius: 12px;">
+                                <div
+                                    style="width: 48px; height: 48px; background: #dcfce7; color: #16a34a; border-radius: 12px; display: grid; place-items: center; font-size: 1.5rem;">
+                                    ✅</div>
+                                <div>
+                                    <div style="font-weight: 700; font-size: 1.05rem; margin-bottom: 4px;">Hoạt động
+                                    </div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">Hệ thống đang đồng bộ
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="card">
+                        <div class="card-header"
+                            style="display: flex; justify-content: space-between; align-items: center;">
+                            <h3>Danh sách tệp dữ liệu</h3>
+                        </div>
+                        <div class="card-body" style="padding:0">
+                            <table class="data-table" id="knowledgeTable">
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Tên tệp</th>
+                                        <th>Ngày tải lên</th>
+                                        <th>Kích thước</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="knowledgeTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== CONSULT REQUESTS ========== -->
+                <div class="page-section" id="page-consult">
+                    <div class="greeting">
+                        <h1>📋 Yêu cầu tư vấn</h1>
+                        <p>Quản lý danh sách đăng ký tư vấn từ người dùng.</p>
+                    </div>
+
+                    <div class="stats-grid" id="consultStatsGrid">
+                        <!-- Injected by JS -->
+                    </div>
+
+                    <div class="filter-tabs" id="consultFilter">
+                        <button class="filter-tab active" data-filter="all">Tất cả</button>
+                        <button class="filter-tab" data-filter="new">🆕 Yêu cầu mới</button>
+                        <button class="filter-tab" data-filter="contacted">📞 Đã tiếp nhận</button>
+                        <button class="filter-tab" data-filter="done">✅ Đã trả lời</button>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body" style="padding:0">
+                            <table class="data-table" id="consultTable">
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Họ tên</th>
+                                        <th>SĐT</th>
+                                        <th>Email</th>
+                                        <th>Ngành quan tâm</th>
+                                        <th>Tài khoản</th>
+                                        <th>Trạng thái</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="consultTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========== PROMPT MANAGEMENT ========== -->
+                <div class="page-section" id="page-prompt">
+                    <div class="greeting">
+                        <h1>🤖 Quản lý Context</h1>
+                        <p>Tùy chỉnh tính cách và chỉ thị (System Prompt) cho AI Agent theo từng tình huống.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"
+                            style="display: flex; justify-content: space-between; align-items: center;">
+                            <h3>Danh sách System Prompts</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-table" id="promptTable" style="table-layout: fixed; width: 100%;">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 15%; text-align: center;">Key</th>
+                                            <th style="width: 25%; text-align: center;">Tên kịch bản</th>
+                                            <th style="width: 45%; text-align: center;">Mô tả</th>
+                                            <th style="width: 15%; text-align: center;">Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="promptTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <div class="admin-footer">
+                © Trường Cao đẳng Kỹ thuật Cao Thắng. Bảo lưu mọi quyền. &nbsp;|&nbsp; Chatbot Tư Vấn Tuyển Sinh
+            </div>
+        </div>
+    </div>
+
+    <script src="js/streamlit_api.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/renders.js"></script>
+    <script src="js/actions.js"></script>
+</body>
+
+</html>

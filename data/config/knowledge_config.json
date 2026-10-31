@@ -1,0 +1,32 @@
+{
+    "cau-hoi-thuong-gap.json": {
+        "enabled": true,
+        "description": "Câu hỏi thường gặp về tuyển sinh",
+        "uploaded_at": "2026-06-27T09:27:31.726845"
+    },
+    "diem-chuan.json": {
+        "enabled": false,
+        "description": "Điểm chuẩn các ngành qua các năm",
+        "uploaded_at": "2026-06-27T09:27:31.727845"
+    },
+    "hoc-phi.json": {
+        "enabled": false,
+        "description": "Thông tin học phí các ngành",
+        "uploaded_at": "2026-06-27T09:27:31.727845"
+    },
+    "nganh-nghe-dao-tao.json": {
+        "enabled": true,
+        "description": "Thông tin 23 ngành nghề đào tạo",
+        "uploaded_at": "2026-06-27T09:27:31.727845"
+    },
+    "so-tay-sinh-vien.json": {
+        "enabled": true,
+        "description": "Sổ tay sinh viên - thông tin chung về trường",
+        "uploaded_at": "2026-06-27T09:27:31.727845"
+    },
+    "nganh-moi-2026.txt": {
+        "enabled": false,
+        "description": "File tải lên từ Admin",
+        "uploaded_at": "2026-07-23T08:18:19.501250"
+    }
+}
