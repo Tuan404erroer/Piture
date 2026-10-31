@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kurzgesagt AI Image Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .presets {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .preset-btn {
+            padding: 10px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .preset-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .settings {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        
+        .generate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .generate-btn:hover {
+            transform: scale(1.02);
+        }
+        
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .result-area {
+            text-align: center;
+        }
+        
+        #resultImage {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .placeholder {
+            padding: 60px 20px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            color: #999;
+        }
+        
+        .loading {
+            display: none;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .download-btn {
+            display: none;
+            padding: 12px 30px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .download-btn:hover {
+            background: #45a049;
+        }
+        
+        .image-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Kurzgesagt AI Image Generator</h1>
+            <div class="status">
+                {% if device == 'cuda' %}
+                    🟢 {{ gpu_name }} Ready
+                {% else %}
+                    🔴 CPU Mode
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <!-- Left: Input -->
+            <div class="card">
+                <h2>💬 Tạo ảnh mới</h2>
+                
+                <div class="presets">
+                    <button class="preset-btn" onclick="setPreset('space stars planets galaxy cosmic')">🌌 Vũ trụ</button>
+                    <button class="preset-btn" onclick="setPreset('forest mountains river wildlife sunset')">🌲 Thiên nhiên</button>
+                    <button class="preset-btn" onclick="setPreset('atoms molecules DNA cells science')">🔬 Khoa học</button>
+                    <button class="preset-btn" onclick="setPreset('bird tree sky clouds nature')">🐦 Chim</button>
+                </div>
+                
+                <div class="form-group">
+                    <label>🎨 Model Style:</label>
+                    <select id="modelSelect" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px;">
+                        <option value="dreamlike" selected>Dreamlike (Vector Art / Kurzgesagt Style)</option>
+                        <option value="miaomiao">MiaoMiao Anima (Anime / Waifu Style)</option>
+                    </select>
+                    <small style="color: #666; display: block; margin-top: 5px;">
+                        💡 Model sẽ tự động switch khi generate. Model cũ sẽ unload để tiết kiệm VRAM.
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Mô tả ảnh (tiếng Anh/Việt):</label>
+                    <textarea id="prompt" placeholder="Ví dụ: một con chim nhìn sao đêm..."></textarea>
+                    <button class="preset-btn" onclick="enhancePrompt()" style="margin-top: 10px; width: 100%;">
+                        ✨ Enhance với Gemini AI
+                    </button>
+                    <div id="enhancedPromptDisplay" style="margin-top: 15px; padding: 12px; background: #e8f5e9; border-radius: 8px; display: none;"></div>
+                </div>
+                
+                <details>
+                    <summary style="cursor: pointer; margin-bottom: 15px; color: #667eea; font-weight: 500;">⚙️ Cài đặt nâng cao</summary>
+                    <div class="settings">
+                        <div class="form-group">
+                            <label>Steps: <span id="stepsValue">50</span></label>
+                            <input type="range" id="steps" min="20" max="100" value="50" step="5" oninput="document.getElementById('stepsValue').textContent = this.value">
+                        </div>
+                        <div class="form-group">
+                            <label>CFG Scale: <span id="cfgValue">5.0</span></label>
+                            <input type="range" id="cfg" min="1" max="15" value="5" step="0.5" oninput="document.getElementById('cfgValue').textContent = this.value">
+                        </div>
+                        <div class="form-group">
+                            <label>Width:</label>
+                            <select id="width">
+                                <option value="384">384 (fastest)</option>
+                                <option value="512" selected>512 (balanced)</option>
+                                <option value="640">640</option>
+                                <option value="768">768 (recommended max for 4GB)</option>
+                                <option value="896">896 (may need Virtual Memory)</option>
+                                <option value="1024">1024 (requires Virtual Memory 16GB+)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Height:</label>
+                            <select id="height">
+                                <option value="384">384 (fastest)</option>
+                                <option value="512" selected>512 (balanced)</option>
+                                <option value="640">640</option>
+                                <option value="768">768 (recommended max for 4GB)</option>
+                                <option value="896">896 (may need Virtual Memory)</option>
+                                <option value="1024">1024 (requires Virtual Memory 16GB+)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="randomSeed" checked onchange="toggleSeed()"> Seed ngẫu nhiên
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>Seed:</label>
+                            <input type="number" id="seed" value="-1" disabled>
+                        </div>
+                    </div>
+                </details>
+                
+                <button class="generate-btn" onclick="generateImage()">🚀 Tạo Ảnh</button>
+            </div>
+            
+            <!-- Right: Output -->
+            <div class="card">
+                <h2>🖼️ Kết quả</h2>
+                <div class="result-area">
+                    <div class="placeholder" id="placeholder">
+                        <p style="font-size: 3rem;">🎨</p>
+                        <p>Nhập mô tả và nhấn "Tạo Ảnh" để bắt đầu</p>
+                    </div>
+                    
+                    <div class="loading" id="loading">
+                        <div class="spinner"></div>
+                        <p>Đang tạo ảnh...</p>
+                        <p id="progressText"></p>
+                    </div>
+                    
+                    <img id="resultImage" alt="Generated image">
+                    <button class="download-btn" id="downloadBtn" onclick="downloadImage()">💾 Tải về</button>
+                    
+                    <div class="image-info" id="imageInfo"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentImage = null;
+        let currentSeed = null;
+        
+        function setPreset(text) {
+            document.getElementById('prompt').value = text;
+        }
+        
+        function toggleSeed() {
+            const checkbox = document.getElementById('randomSeed');
+            const seedInput = document.getElementById('seed');
+            seedInput.disabled = checkbox.checked;
+            if (checkbox.checked) seedInput.value = -1;
+        }
+        
+        async function enhancePrompt() {
+            const prompt = document.getElementById('prompt').value.trim();
+            if (!prompt) {
+                alert('Nhập mô tả trước!');
+                return;
+            }
+            
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = '⏳ Gemini đang xử lý...';
+            
+            // Show processing
+            const promptDisplay = document.getElementById('enhancedPromptDisplay');
+            promptDisplay.innerHTML = '<p style="color: #999; font-style: italic;">🤖 Gemini AI đang tạo kịch bản chi tiết...</p>';
+            promptDisplay.style.display = 'block';
+            
+            try {
+                const response = await fetch('/enhance-prompt', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({prompt})
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    alert('Lỗi: ' + data.error);
+                    promptDisplay.style.display = 'none';
+                } else {
+                    document.getElementById('prompt').value = data.enhanced;
+                    
+                    // Store negative prompt
+                    window.currentNegative = data.negative || '';
+                    
+                    // Show both prompts
+                    promptDisplay.innerHTML = `
+                        <strong>✅ Positive Prompt:</strong>
+                        <div style="background: #f0f0f0; padding: 12px; border-radius: 6px; margin-top: 8px; font-size: 13px; line-height: 1.6; max-height: 150px; overflow-y: auto;">
+                            ${data.enhanced}
+                        </div>
+                        <strong style="margin-top: 15px; display: block;">✅ Negative Prompt (Gemini tạo):</strong>
+                        <div style="background: #ffe0e0; padding: 12px; border-radius: 6px; margin-top: 8px; font-size: 13px; line-height: 1.6;">
+                            ${data.negative}
+                        </div>
+                        <small style="color: #666; margin-top: 8px; display: block;">
+                            💡 Input gốc: "${data.original}"
+                        </small>
+                    `;
+                    promptDisplay.style.display = 'block';
+                }
+            } catch (error) {
+                alert('Lỗi kết nối: ' + error);
+                promptDisplay.style.display = 'none';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        }
+        
+        async function generateImage() {
+            const prompt = document.getElementById('prompt').value.trim();
+            if (!prompt) {
+                alert('Vui lòng nhập mô tả ảnh!');
+                return;
+            }
+            
+            const steps = document.getElementById('steps').value;
+            const cfg = document.getElementById('cfg').value;
+            const seed = document.getElementById('seed').value;
+            const width = document.getElementById('width').value;
+            const height = document.getElementById('height').value;
+            const model = document.getElementById('modelSelect').value;  // Get selected model
+            
+            // Get negative prompt if exists
+            const negative_prompt = window.currentNegative || '';
+            
+            // Show loading
+            document.getElementById('placeholder').style.display = 'none';
+            document.getElementById('resultImage').style.display = 'none';
+            document.getElementById('downloadBtn').style.display = 'none';
+            document.getElementById('imageInfo').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+            document.querySelector('.generate-btn').disabled = true;
+            
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({prompt, negative_prompt, steps, cfg, seed, width, height, model})
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    alert('Lỗi: ' + data.error);
+                    return;
+                }
+                
+                // Show image
+                currentImage = data.image;
+                currentSeed = data.seed;
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('resultImage').src = data.image;
+                document.getElementById('resultImage').style.display = 'block';
+                document.getElementById('downloadBtn').style.display = 'inline-block';
+                
+                // Show info with both prompts
+                const promptUsed = data.prompt_used || prompt;
+                const negativeUsed = data.negative_used || negative_prompt;
+                document.getElementById('imageInfo').innerHTML = `
+                    <strong>Seed:</strong> ${data.seed}<br>
+                    <strong>Steps:</strong> ${steps} | <strong>CFG:</strong> ${cfg}<br>
+                    <strong>Size:</strong> ${width}x${height}<br>
+                    <details style="margin-top: 10px;">
+                        <summary style="cursor: pointer; color: #667eea; font-weight: 500;">📋 View Prompts</summary>
+                        <div style="margin-top: 10px;">
+                            <strong>Positive:</strong><br>
+                            <div style="background: #f5f5f5; padding: 8px; border-radius: 4px; margin: 5px 0; font-size: 11px; max-height: 100px; overflow-y: auto;">
+                                ${promptUsed}
+                            </div>
+                            <strong>Negative:</strong><br>
+                            <div style="background: #ffe0e0; padding: 8px; border-radius: 4px; margin: 5px 0; font-size: 11px;">
+                                ${negativeUsed}
+                            </div>
+                        </div>
+                    </details>
+                `;
+                document.getElementById('imageInfo').style.display = 'block';
+                
+            } catch (error) {
+                alert('Lỗi kết nối: ' + error);
+            } finally {
+                document.querySelector('.generate-btn').disabled = false;
+            }
+        }
+        
+        function downloadImage() {
+            if (!currentImage) return;
+            
+            const link = document.createElement('a');
+            link.href = currentImage;
+            link.download = `kurzgesagt_${currentSeed}.png`;
+            link.click();
+        }
+    </script>
+</body>
+</html>

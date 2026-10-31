@@ -1,0 +1,75 @@
+================================================================================
+  KURZGESAGT AI IMAGE GENERATOR - BẮT ĐẦU TẠI ĐÂY
+================================================================================
+
+🔧 BẠN ĐANG GẶP LỖI CÀI ĐẶT VỚI PYTHON 3.14? 
+
+   ĐỌC FILE: FIX_PYTHON_314.md
+
+================================================================================
+
+📋 HƯỚNG DẪN CÀI ĐẶT NHANH (3 BƯỚC):
+
+1. MỞ POWERSHELL trong thư mục này, chạy:
+
+   install_simple.bat
+
+2. ĐỢI cài đặt xong (5-10 phút)
+
+3. CHẠY ứng dụng:
+
+   run.bat
+
+================================================================================
+
+📂 CÁC FILE QUAN TRỌNG:
+
+- FIX_PYTHON_314.md      → Sửa lỗi Python 3.14 (ĐỌC NÀY TRƯỚC!)
+- install_simple.bat     → Cài đặt tự động (đơn giản nhất)
+- INSTALL_PYTORCH.md     → Hướng dẫn cài PyTorch chi tiết
+- QUICKSTART.md          → Hướng dẫn nhanh 5 phút
+- README.md              → Tài liệu đầy đủ
+
+================================================================================
+
+⚡ CÀI ĐẶT THỦ CÔNG (Copy các lệnh sau vào PowerShell):
+
+cd "d:\HOC\PICTURE_AI"
+python -m venv venv
+venv\Scripts\activate
+python -m pip install --upgrade pip
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+pip install streamlit diffusers transformers accelerate safetensors Pillow numpy scipy
+python check_system.py
+streamlit run app.py
+
+================================================================================
+
+✅ SAU KHI CÀI ĐẶT XONG:
+
+Chạy: run.bat
+Hoặc: streamlit run app.py
+
+Ứng dụng sẽ mở tại: http://localhost:8501
+
+================================================================================
+
+💡 TIPS:
+
+- Lần đầu tải model sẽ mất 1-2 phút
+- Tạo ảnh 512x512 mất ~40-50 giây trên RTX 2050
+- Thử preset "Space Scene" để bắt đầu!
+
+================================================================================
+
+🐛 GẶP LỖI?
+
+1. Chạy: python check_system.py
+2. Đọc: FIX_PYTHON_314.md
+3. Xem phần "Xử lý lỗi" trong README.md
+
+================================================================================
+
+🎨 HAVE FUN CREATING ART!
+
+================================================================================

@@ -1,0 +1,23 @@
+# Web Framework
+streamlit>=1.31.0
+
+# Core ML Libraries - Cài PyTorch riêng (xem INSTALL_PYTORCH.md)
+# torch và torchvision sẽ được cài bằng lệnh riêng
+
+# Diffusion & Transformers
+diffusers>=0.26.0
+transformers>=4.37.0
+accelerate>=0.26.0
+
+# Model Loading
+safetensors>=0.4.0
+
+# Image Processing
+Pillow>=10.0.0
+
+# Utilities
+numpy>=1.24.0
+scipy>=1.11.0
+
+# Gemini API
+google-genai>=1.0.0

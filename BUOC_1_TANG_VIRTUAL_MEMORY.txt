@@ -1,0 +1,54 @@
+========================================
+BƯỚC 1: TĂNG VIRTUAL MEMORY (BẮT BUỘC!)
+========================================
+
+BẠN ĐANG GẶP LỖI:
+"The paging file is too small for this operation to complete"
+
+ĐÂY LÀ LỖI CỦA WINDOWS, KHÔNG PHẢI CODE!
+
+========================================
+CÁCH SỬA (5 PHÚT):
+========================================
+
+1. Nhấn phím Windows + R
+2. Gõ: sysdm.cpl
+3. Nhấn Enter
+
+4. Chọn tab "Advanced" (ở trên)
+5. Click nút "Settings..." (trong mục Performance)
+
+6. Chọn tab "Advanced" (trong cửa sổ mới)
+7. Click nút "Change..." (trong mục Virtual Memory)
+
+8. BỎ TICK "Automatically manage paging file size for all drives"
+
+9. Chọn ổ đĩa C:
+
+10. Chọn "Custom size"
+
+11. Nhập:
+    Initial size (MB): 8192
+    Maximum size (MB): 16384
+
+12. Click "Set"
+13. Click "OK"
+14. Click "OK"
+15. Click "OK"
+
+16. *** RESTART MÁY *** (BẮT BUỘC!)
+
+========================================
+SAU KHI RESTART:
+========================================
+
+Chạy lại:
+py -3.11 web_app.py
+
+ĐẢM BẢO:
+- Đã restart máy
+- Đóng Chrome/apps khác trước khi chạy
+
+========================================
+
+LƯU Ý: Nếu không restart máy, lỗi vẫn xuất hiện!
